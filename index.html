@@ -1,0 +1,30 @@
+<html>
+    <head>
+    <!-- 1. Load webcomponents.js for polyfill support. -->
+    <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="simian-teleprompter.html">
+    </head>
+    <body>
+        <simian-teleprompter wordDelay="200">
+        </simian-teleprompter>
+
+        <textarea id="input">
+            Try me out
+        </textarea>
+        <br/>
+        <button>PROMPT</button>
+        <script>
+            window.addEventListener('polymer-ready', function(e) {
+                var prompter = document.querySelector('simian-teleprompter');
+                prompter.addEventListener('teleprompt-finished', function (e) {
+                    console.log('teleprompter done');
+                });
+                var text = document.querySelector('textarea');
+                document.querySelector('button').addEventListener('click', function () {
+                    prompter.words = text.value;
+                });
+            });
+        </script>
+    </body>
+</html>
+

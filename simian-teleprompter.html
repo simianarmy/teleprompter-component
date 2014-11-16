@@ -1,0 +1,52 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<polymer-element name="simian-teleprompter" attributes="words wordDelay displayTime">
+    <template>
+        <div horizontal layout>
+            <span id="teleprompter">
+                <content></content>
+            </span>
+        </div>
+    </template>
+    <script>
+        Polymer({
+            /**
+             * Time between words
+             * @type {number} milliseconds
+             */
+            wordDelay: 1000, // default delay between words
+            /**
+             * Total time to display all words
+             * @type {number} milliseconds
+             */
+            displayTime: 0,
+
+            ready: function () {
+                var words = this.innerText;
+                this.innerText = ''; // clear the text
+                this.showWords(words);
+            },
+            wordsChanged: function () {
+                this.showWords(this.words);
+            },
+            showWords: function (words) {
+                var list = words.split(' ');
+                var numWords = Math.max(list.length, 1);
+                var wordTime = this.displayTime > 0 ? (this.displayTime / numWords + 1) : this.wordDelay;
+                var count = 1;
+                var that = this;
+
+                setTimeout(function updateWords() {
+                    that.$.teleprompter.textContent = list.slice(0, count).join(' ');
+                    if (count++ < numWords) {
+                        setTimeout(updateWords, wordTime);
+                    }
+                    else {
+                        // publish end of prompter event
+                        that.fire('teleprompt-finished');
+                    }
+                }, wordTime);
+            }
+        });
+    </script>
+</polymer-element>
